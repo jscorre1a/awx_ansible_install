@@ -1,0 +1,7 @@
+---
+# vars file for docker_awx
+
+docker_packages:
+- docker-ce
+- docker-ce-cli
+- containerd.io

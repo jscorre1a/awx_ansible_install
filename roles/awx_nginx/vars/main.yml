@@ -1,0 +1,9 @@
+---
+# vars file for awx_nginx
+
+selinux_dependencies:
+- libselinux-utils
+- policycoreutils
+- selinux-policy-targeted
+#probably the above are not needed!
+- python3-libsemanage

@@ -1,0 +1,7 @@
+---
+# handlers file for docker_awx
+- name: Start Docker
+  service:
+    name: docker
+    state: reloaded
+    enabled: yes

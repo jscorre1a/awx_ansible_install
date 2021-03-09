@@ -1,0 +1,33 @@
+---
+########################
+# SELinux Dependencies #
+########################
+
+- name: (CentOS/RHEL 8) Install dependencies
+  yum:
+    name: "{{item}}"
+    state: present
+  loop: "{{selinux_dependencies}}"
+  when: ansible_facts['distribution_major_version'] is version('8', '==')
+
+- name: Set SELinux mode to permissive
+  selinux:
+    state: permissive
+    policy: targeted
+
+- name: Allow SELinux HTTP network connections
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Allow SELinux HTTP network connections
+  seboolean:
+    name: httpd_can_network_relay
+    state: yes
+    persistent: yes
+
+- name: Set SELinux mode to enforcing
+  selinux:
+    state: enforcing
+    policy: targeted

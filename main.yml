@@ -1,0 +1,17 @@
+- name: Full Ansible AWX solution installation
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    ############################################
+    #  Ngnix and dependencies for SELINUX and Flag #
+    ############################################
+    - awx_nginx
+    ########################################################################
+    # So, the first you'll need is a driver. Let's use docker as a driver. #
+    ########################################################################
+    - awx_docker
+    ##################################
+    # AWX Setup #
+    #################################
+    - awx_setup

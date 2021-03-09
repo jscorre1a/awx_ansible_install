@@ -1,0 +1,17 @@
+---
+# tasks file for awx_nginx
+
+- name: Set up selinux prerequisites
+  include_tasks: "{{ role_path }}/tasks/dependencies/selinux.yml"
+
+#########
+# Nginx #
+#########
+- name: Install Nginx
+  yum:
+    name: nginx
+    state: present
+  notify: Start Nginx
+
+- name: Check everything's running
+  meta: flush_handlers

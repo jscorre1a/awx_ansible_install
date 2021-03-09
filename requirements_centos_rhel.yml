@@ -1,0 +1,17 @@
+- name: Force Minimal Ansible Requirements for Hosts
+  hosts: all
+  become: true
+  gather_facts: false
+  pre_tasks:
+    - name: Install Python38 (RAW)
+      raw: 'yum install -y python38'
+
+  tasks:
+    - name: Gather Python Information
+      raw: 'python3 --version'
+      register: installed_python_version
+      ignore_errors: true
+
+    - name: Validate Python38 Installation
+      debug:
+        msg: "If there is any python hidden here... It's current version is {{installed_python_version.stdout_lines[1]}}"

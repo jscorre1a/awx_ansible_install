@@ -1,0 +1,7 @@
+[HostsMaster]
+XXX.XXX.XXX.XXX
+
+[HostsMaster:vars]
+ansible_user=ansible
+ansible_ssh_pass=ansible
+ansible_sudo_pass=ansible

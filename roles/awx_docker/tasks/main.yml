@@ -1,0 +1,27 @@
+---
+# tasks file for docker_awx
+
+- name: Add Docker-CE official REPO
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /tmp
+
+#The following step could be replaced if the dest: was the one I needed. But for security reasons, let's enforce this step.
+- name: Copy and change permissions/owner
+  copy:
+    src: /tmp/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    remote_src: true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install Docker-CE packages
+  yum:
+    name: "{{item}}"
+    state: present
+  loop: "{{docker_packages}}"
+  notify: Start Docker
+
+- name: Check everything's running
+  meta: flush_handlers

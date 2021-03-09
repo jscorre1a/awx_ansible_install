@@ -1,0 +1,86 @@
+---
+# tasks file for awx_setup
+
+- name: Download minikube RPM
+  get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+    dest: /tmp
+  
+- name: Install local minikube RPM
+  yum:
+    name: /tmp/minikube-latest.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+
+- name: Set minikube driver as docker (Fix#1)
+  command: minikube config set driver docker
+  become: false
+
+- name: Add Ansible user to docker group (Fix#2)
+  user:
+    name: ansible
+    group: docker
+
+- name: Reset ssh connection to allow user changes to affect 'current login user' (Fix#2)
+  meta: reset_connection
+
+- name: Start minikube (may take up to 5 minutes)
+  command: "{{minikube_start}}"
+  become: false
+
+- name: Deploying the AWX Operator
+  command: "{{minikube_start_operator}}"
+  become: false
+
+- name: Get results from minikube deployment
+  command: minikube kubectl get pods
+  become: false
+  register: minikube_get_pods
+  
+- name: Return result from minikube
+  debug:
+    msg: "Return information is {{minikube_get_pods.stdout_lines[1]}}" 
+
+- name: Copy myawx.yml configuration file
+  copy:
+    src: myawx.yml
+    dest: /tmp/myawx.yml
+
+- name: Create the AWX object
+  command: minikube kubectl apply -- -f /tmp/myawx.yml
+  become: false
+
+- name: Pause for 6m. Minikube is doing stuff... (Fix#3)
+  pause:
+    minutes: "6"
+
+- name: Get results from minikube AWX object deployment service URL
+  command: minikube service awx-service --url
+  become: false
+  register: minikube_service_url
+  
+#No need for the following
+
+# - name: Return result from minikube AWX object deployment service URL
+#   debug:
+#     msg: "Return information is {{minikube_service_url.stdout_lines[0]}}" 
+
+# - name: Register new variable for Nginx Config (proxy_pass)
+#   set_fact:
+#     awx_web_path: "{{minikube_service_url.stdout_lines[0] | regex_replace('http://', '')}}"
+
+- name: Hum... I could use template...but (change nginx.config)
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    backup: yes
+    insertafter: '^\s*location / {'
+    regexp: "^proxy_pass"
+    line: "            proxy_pass {{minikube_service_url.stdout_lines[0]}}/;"
+  notify: reload Nginx
+
+- name: Enable firewall to http services
+  firewalld:
+    service: http
+    permanent: yes
+    immediate: yes
+    state: enabled
