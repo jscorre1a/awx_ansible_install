@@ -21,19 +21,19 @@ After this, you'll need to run the main.yml
 
 Note that, there are 3 major roles stated here:
 
-- awx_nginx
- * This one installs and configures nginx and selinux.
+* awx_nginx
+  * This one installs and configures nginx and selinux.
 
 
-- awx_docker
- * This installs and configures docker.
+* awx_docker
+  * This installs and configures docker.
 
 
-- awx_setup
- * This will use docker, and will configure nginx after the installation and configuration of:
-   - minikube
-   - all pods needed for AWX
-   - configuration of the firewall
+* awx_setup
+  * This will use docker, and will configure nginx after the installation and configuration of:
+    * minikube
+    * all pods needed for AWX
+    * configuration of the firewall
 
 Detailed information inside each tasks main.yml.
 
