@@ -6,7 +6,7 @@ This project was created in a Home Lab using:
   * A minimal install.
   * And the Ansible user created during install.
 
-The meet Ansible requirements, since python wasn't installed during minimal install, you'll need to RAW and install python38 first.
+To meet Ansible requirements, since python wasn't installed during minimal install, you'll need to RAW and install python38 first.
 So, for CentOS and RHEL distros, please run:
 
 * ansible-playbook -i inventory/hosts requirements_centos_rhel.yml
@@ -17,9 +17,9 @@ Then, since this is a Home Lab and I don't have an existing OpenShift or Kuberne
 
 * minikube
 
-After this, you'll need to run the main.yml
+So after the python requirements, you'll need to run the main.yml
 
-Note that, there are 3 major roles stated here:
+Note that there are 3 major roles stated here:
 
 * awx_nginx
   * This one installs and configures nginx and selinux.
@@ -30,14 +30,15 @@ Note that, there are 3 major roles stated here:
 
 
 * awx_setup
-  * This will use docker, and will configure nginx after the installation and configuration of:
+  * This will use docker, and will configure nginx after the installation. 
+  * In this role we install:
     * minikube
     * all pods needed for AWX
-    * configuration of the firewall
+    * and configure the firewall
 
-Detailed information inside each tasks main.yml.
+Detailed information is inside each tasks/main.yml.
 
-Please note this is a development version of AWX. So... Things may break in the future.
+Please note that this is a development version of AWX. So... Things may break in the future.
 
 After completion, you may go to the IP of your machine in the web browser, and login as:
 - admin
