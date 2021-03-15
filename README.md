@@ -11,6 +11,7 @@ The lab used for this purpose was:
   * And the Ansible user created during install.
 
 Upon clone, please don't forget to update de *hosts* file inside the inventory folder.
+The IP address are a mere sugestion, be sure to provide your own. Don't forget to change also in the awx.yml file.
 Please update de user and password in the *all* file inside group_vars.
 
 If you wish just to deploy AWX you can skip the execution of the monitoring.yml playbook. And set the default variable *'allow_monitoring'* inside the role of awx_setup to *false*.
