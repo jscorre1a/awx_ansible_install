@@ -1,0 +1,5 @@
+---
+# vars file for elk_stack
+elk_services:
+- elasticsearch
+- kibana

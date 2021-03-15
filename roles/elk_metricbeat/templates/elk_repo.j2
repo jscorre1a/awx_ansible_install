@@ -1,0 +1,8 @@
+[elk]
+name=Elasticsearch and Kibana repository for {{ elk_version }} packages
+baseurl=https://artifacts.elastic.co/packages/{{ elk_version }}/yum
+gpgcheck=1
+gpgkey={{ elk_key }}
+enabled=1
+autorefresh=1
+type=rpm-md

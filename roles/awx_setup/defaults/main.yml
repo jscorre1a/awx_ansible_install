@@ -1,2 +1,11 @@
 ---
 # defaults file for awx_setup
+
+minikube_cpu: 2
+minikube_ram: 3g
+
+minikube_start:  minikube start --cpus={{minikube_cpu}} --memory={{minikube_ram}} --addons=ingress
+
+minikube_awx_yaml : https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
+
+minikube_start_operator: minikube kubectl -- apply -f {{minikube_awx_yaml}}

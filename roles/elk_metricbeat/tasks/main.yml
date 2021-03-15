@@ -1,0 +1,46 @@
+---
+# tasks file for elk_metricbeat
+
+#####################################################
+# Following the official documentation:             #
+# Import key.                                       #
+#####################################################
+- name: Import Metricbeat Key
+  rpm_key:
+    state: present
+    key: "{{ elk_key }}"
+
+###########################
+# Copy repo via template. #
+###########################
+- name: Add Metricbeat Repo
+  template:
+    src: elk_repo.j2
+    dest: /etc/yum.repos.d/elk.repo
+    mode: 0644
+
+#######################
+# Install Metricbeat. #
+#######################
+- name: Install Metricbeat
+  yum:
+    name: metricbeat
+    update_cache: yes
+    state: present
+
+###################################################
+# Configure monitoring settings in metricbeat.yml #
+###################################################
+- name: Insert metricbeat System Module Block
+  blockinfile:
+    path: /etc/metricbeat/metricbeat.yml
+    marker: "# {mark} Ansible managed block for enabled modules"
+    backup: yes
+    block: "{{ lookup('file', 'metricbeat_conf.yml') }}"
+  notify: "Enable/Start Metricbeat"
+
+#########################
+# Force handler to run. #
+#########################
+- name: Check everything's running
+  meta: flush_handlers

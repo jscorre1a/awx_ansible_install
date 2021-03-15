@@ -1,6 +1,11 @@
 ---
 # tasks file for awx_setup
 
+#####################################################################################
+# BEGIN - Step1: Download and install minikube.                                     #
+#         Step2: Set previously installed docker as default driver.                 #
+#         Step3: Start minikube. Please verify parameters in the default variables. #
+#####################################################################################
 - name: Download minikube RPM
   get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
@@ -28,6 +33,13 @@
   command: "{{minikube_start}}"
   become: false
 
+#######
+# END #
+#######
+
+#######################
+# Get and deploy AWX. #
+#######################
 - name: Deploying the AWX Operator
   command: "{{minikube_start_operator}}"
   become: false
@@ -41,6 +53,9 @@
   debug:
     msg: "Return information is {{minikube_get_pods.stdout_lines[1]}}" 
 
+############################
+# AWX tower configuration. #
+############################
 - name: Copy myawx.yml configuration file
   copy:
     src: myawx.yml
@@ -54,33 +69,39 @@
   pause:
     minutes: "6"
 
+#####################
+# Register AWX url. #
+#####################
 - name: Get results from minikube AWX object deployment service URL
   command: minikube service awx-service --url
   become: false
   register: minikube_service_url
-  
-#No need for the following
 
+###################################################################################################
+# Unecessary block. Retained for future interpretations  
+# No need for the following
 # - name: Return result from minikube AWX object deployment service URL
 #   debug:
 #     msg: "Return information is {{minikube_service_url.stdout_lines[0]}}" 
-
 # - name: Register new variable for Nginx Config (proxy_pass)
 #   set_fact:
 #     awx_web_path: "{{minikube_service_url.stdout_lines[0] | regex_replace('http://', '')}}"
+#################################################################################################
 
-- name: Hum... I could use template...but (change nginx.config)
+##########################################################################
+# Copy minikube awx_service --url to Nginx configuration, as proxy_pass. #
+##########################################################################
+- name: Changing nginx.config without using template.
   lineinfile:
     path: /etc/nginx/nginx.conf
     backup: yes
     insertafter: '^\s*location / {'
-    regexp: "^proxy_pass"
+    regexp: '^\s*proxy_pass'
     line: "            proxy_pass {{minikube_service_url.stdout_lines[0]}}/;"
   notify: reload Nginx
 
-- name: Enable firewall to http services
-  firewalld:
-    service: http
-    permanent: yes
-    immediate: yes
-    state: enabled
+#########################
+# Force handler to run. #
+#########################
+- name: Check everything's running
+  meta: flush_handlers

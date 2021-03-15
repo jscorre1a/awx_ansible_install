@@ -1,0 +1,30 @@
+---
+# tasks file for awx_nginx
+
+- name: Set up selinux prerequisites
+  include_tasks: "{{ role_path }}/tasks/dependencies/selinux.yml"
+
+#################
+# Install Nginx #
+#################
+- name: Install Nginx
+  yum:
+    name: nginx
+    state: present
+  notify: Start Nginx
+
+###############################
+# Enable this server as http. #
+###############################
+- name: Enable firewall to http services
+  firewalld:
+    service: http
+    permanent: yes
+    immediate: yes
+    state: enabled
+    
+#########################
+# Force handler to run. #
+#########################
+- name: Check everything's running
+  meta: flush_handlers

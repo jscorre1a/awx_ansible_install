@@ -1,0 +1,14 @@
+---
+# handlers file for elk_stack
+- name: Enable/Start ELK Services
+  service:
+    name: "{{ item }}"
+    state: reloaded
+    enabled: yes
+  loop: "{{ elk_services }}"
+
+- name: reload Nginx
+  service:
+    name: nginx
+    state: reloaded
+    enabled: yes

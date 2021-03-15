@@ -6,7 +6,9 @@
     url: https://download.docker.com/linux/centos/docker-ce.repo
     dest: /tmp
 
-#The following step could be replaced if the dest: was the one I needed. But for security reasons, let's enforce this step.
+#######################################################################################################################################
+# The following step could be replaced if I used this dest for the get_url module. But for security reasons, let's enforce this step. #
+#######################################################################################################################################
 - name: Copy and change permissions/owner
   copy:
     src: /tmp/docker-ce.repo
@@ -16,6 +18,9 @@
     group: root
     mode: '0644'
 
+#######################################
+# Install docker, cli and containerd. #
+#######################################
 - name: Install Docker-CE packages
   yum:
     name: "{{item}}"
@@ -23,5 +28,8 @@
   loop: "{{docker_packages}}"
   notify: Start Docker
 
+#########################
+# Force handler to run. #
+#########################
 - name: Check everything's running
   meta: flush_handlers

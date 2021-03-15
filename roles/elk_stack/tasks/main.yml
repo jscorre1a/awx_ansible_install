@@ -1,0 +1,59 @@
+---
+# tasks file for monitor_elastic
+
+#####################################################
+# Following the official documentation:
+# Import key. #
+#####################################################
+- name: Import ElasticSearch and Kibana Key
+  rpm_key:
+    state: present
+    key: "{{ elk_key }}"
+
+###########################
+# Copy repo via template. #
+###########################
+- name: Add ElasticSearch Repo
+  template:
+    src: elk_repo.j2
+    dest: /etc/yum.repos.d/elk.repo
+    mode: 0644
+
+##########################################
+# Install elk stack.                     #
+##########################################
+- name: Install ElasticSearch and Kibana
+  yum:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+  loop: "{{ elk_services }}"
+  notify: "Enable/Start ELK Services"
+
+#######################################
+# Kibana port as proxy_pass in Nginx. #
+#######################################
+- name: Changing nginx.config without using template.
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    backup: yes
+    insertafter: '^\s*location / {'
+    regexp: '^\s*proxy_pass'
+    line: "            proxy_pass http://localhost:5601/;"
+  notify: reload Nginx
+
+#################################
+# Enable this server port 9200. #
+#################################
+- name: Enable firewall to port 9200
+  firewalld:
+    port: 9200/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+#########################
+# Force handler to run. #
+#########################
+- name: Check everything's running
+  meta: flush_handlers

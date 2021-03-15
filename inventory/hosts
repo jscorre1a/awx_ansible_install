@@ -1,7 +1,5 @@
-[HostsMaster]
-XXX.XXX.XXX.XXX
+[Monitoring]
+192.168.1.164
 
-[HostsMaster:vars]
-ansible_user=ansible
-ansible_ssh_pass=ansible
-ansible_sudo_pass=ansible
+[AWXMaster]
+192.168.1.167

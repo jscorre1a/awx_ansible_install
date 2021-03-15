@@ -1,0 +1,41 @@
+---
+- name: Full Ansible AWX solution installation
+  hosts: AWXMaster
+  become: true
+  gather_facts: true
+  roles:
+    ############################################
+    #  Ngnix and dependencies for SELINUX and Flag #
+    ############################################
+    - minimal_nginx
+
+    ########################################################################
+    # So, the first you'll need is a driver. Let's use docker as a driver. #
+    ########################################################################
+    - awx_docker
+
+    #############
+    # AWX Setup #
+    #############
+    - awx_setup
+
+    ############################################################################
+    # Enable monitoring - comment role if you don't want to monitor this host. #
+    ############################################################################
+    - elk_metricbeat
+  
+  ############################################################
+  # COMMENT THE FOLLOWING if you also don't want metricbeat. #
+  ############################################################
+  tasks:    
+    - name: Alternative replace. <temporary> (Update Metricbeat config file.)
+      replace:
+        backup: yes
+        path: /etc/metricbeat/metricbeat.yml
+        regexp: 'localhost:9200'
+        replace: '192.168.1.164:9200'
+
+    - name: Restart Metricbeat Service
+      service:
+        name: metricbeat
+        state: restarted

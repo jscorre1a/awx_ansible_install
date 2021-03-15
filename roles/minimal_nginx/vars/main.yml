@@ -6,4 +6,5 @@ selinux_dependencies:
 - policycoreutils
 - selinux-policy-targeted
 #probably the above are not needed!
+- policycoreutils-python
 - python3-libsemanage

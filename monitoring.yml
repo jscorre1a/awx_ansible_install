@@ -1,0 +1,20 @@
+---
+- name: Install a monitoring EKL stack to watch AWX.
+  hosts: Monitoring
+  become: true
+  gather_facts: true
+  roles:
+    ##################
+    # Install Nginx. #
+    ##################
+    - minimal_nginx
+
+    #####################################################################
+    # Install and enable ELK stack. This is the master monitoring host. #
+    #####################################################################
+    - elk_stack
+
+    ##########################################
+    # Enable monitoring in this server also. #
+    ##########################################
+    - elk_metricbeat
