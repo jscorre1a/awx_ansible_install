@@ -24,9 +24,9 @@
     ############################################################################
     - elk_metricbeat
   
-  ############################################################
-  # COMMENT THE FOLLOWING if you also don't want metricbeat. #
-  ############################################################
+  ################################################################
+  # COMMENT ALL THE FOLLOWING if you also don't want metricbeat. #
+  ################################################################
   tasks:    
     - name: Alternative replace. <temporary> (Update Metricbeat config file.)
       replace:
